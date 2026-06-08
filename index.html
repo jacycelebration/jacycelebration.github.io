@@ -620,6 +620,12 @@
 <form id="rsvp-form" novalidate>
   <div class="form-wrap">
 
+    <!-- Honeypot: off-screen and hidden from people. Bots that auto-fill forms
+         trip this field and are dropped server-side. Real guests never see it. -->
+    <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+      <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+    </div>
+
     <!-- SECTION 1: Guest Info -->
     <div class="card c-lavender">
       <div class="section-label">
@@ -1030,7 +1036,7 @@
       wishlistCategory: giftSugg ? (wishlistNames[giftSugg] || giftSugg) : '',
       message: document.getElementById('message').value.trim(),
       source: window.location.pathname.split('/').pop() || 'index.html',
-      website: ''
+      website: document.getElementById('website').value
     });
 
     try {

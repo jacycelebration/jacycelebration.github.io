@@ -24,24 +24,37 @@ function doGet() {
 function doPost(e) {
   const params = (e && e.parameter) || {};
 
+  // Honeypot — bots that fill the hidden "website" field are silently dropped.
   if ((params.website || "").trim()) {
     return jsonOutput_({ ok: true, skipped: true });
+  }
+
+  // Required fields: a genuine RSVP always carries a name and an attendance
+  // answer. Reject anything missing them so blank/junk POSTs never reach the
+  // sheet. (The page validates these too; this is the server-side backstop.)
+  const fullName = clean_(params.fullName, 100);
+  const attendance = clean_(params.attendance, 10);
+  if (!fullName || !attendance) {
+    return jsonOutput_({ ok: false, error: "Missing required fields." });
   }
 
   const sheet = getOrCreateSheet_();
   ensureHeaders_(sheet);
 
+  // Every value is trimmed, length-capped and formula-sanitised by clean_()
+  // before writing, so a single submission can't bloat the sheet or inject a
+  // spreadsheet formula.
   sheet.appendRow([
     new Date(),
-    params.fullName || "",
-    params.contactNumber || "",
-    params.attendance || "",
-    params.guestCount || "",
-    params.venues || "",
-    params.giftChoice || "",
-    params.wishlistCategory || "",
-    params.message || "",
-    params.source || "",
+    fullName,
+    clean_(params.contactNumber, 30),
+    attendance,
+    clean_(params.guestCount, 10),
+    clean_(params.venues, 200),
+    clean_(params.giftChoice, 50),
+    clean_(params.wishlistCategory, 100),
+    clean_(params.message, 1000),
+    clean_(params.source, 200),
   ]);
 
   return jsonOutput_({ ok: true });
@@ -74,6 +87,19 @@ function ensureHeaders_(sheet) {
   headerRange.setValues([HEADERS]);
   headerRange.setFontWeight("bold");
   sheet.setFrozenRows(1);
+}
+
+// Trim, length-cap, and neutralise spreadsheet formula injection.
+// A value beginning with = + - @ would run as a live formula when the owner
+// opens the sheet (e.g. IMPORTDATA exfiltration or a phishing HYPERLINK).
+// Prefixing with an apostrophe forces Sheets to store it as plain text — this
+// also preserves leading "+" on phone numbers instead of mangling them.
+function clean_(value, maxLength) {
+  let text = String(value == null ? "" : value).trim().slice(0, maxLength);
+  if (/^[=+\-@]/.test(text)) {
+    text = "'" + text;
+  }
+  return text;
 }
 
 function jsonOutput_(payload) {
