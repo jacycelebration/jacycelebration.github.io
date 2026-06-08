@@ -60,10 +60,14 @@ function getOrCreateSheet_() {
 
 function ensureHeaders_(sheet) {
   const headerRange = sheet.getRange(1, 1, 1, HEADERS.length);
-  const currentHeaders = headerRange.getValues()[0];
-  const hasAnyHeader = currentHeaders.some((value) => String(value).trim() !== "");
+  const current = headerRange.getValues()[0].map((value) => String(value).trim());
 
-  if (hasAnyHeader) {
+  // Only skip if the existing header row already matches HEADERS exactly.
+  // (The old version skipped whenever *any* header existed, so an outdated
+  //  5-column layout was never corrected — data then landed under the wrong
+  //  labels. Rewriting on mismatch makes a redeploy self-healing.)
+  const matches = HEADERS.every((header, i) => current[i] === header);
+  if (matches) {
     return;
   }
 
