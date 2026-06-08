@@ -840,9 +840,9 @@
 <!-- SUCCESS -->
 <div id="success-screen">
   <div class="success-card">
-    <span class="success-emoji">🎉</span>
-    <h2>RSVP Received!</h2>
-    <p>Thank you! Your response has been recorded.<br>We can't wait to celebrate with you! 🥳</p>
+    <span class="success-emoji" id="success-emoji">🎉</span>
+    <h2 id="success-heading">RSVP Received!</h2>
+    <p id="success-msg"></p>
     <div class="summary-grid" id="summary-grid"></div>
     <button class="reset-btn" onclick="resetForm()">Submit Another Response</button>
   </div>
@@ -918,41 +918,6 @@
       document.getElementById('gift-type').value = '';
     } else {
       document.querySelectorAll('.wishlist-item img').forEach(function(img) { img.style.removeProperty('display'); });
-    }
-  }
-
-  function loadAvatarPhoto(input) {
-    if (input.files && input.files[0]) {
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        var img = document.getElementById('avatar-img');
-        img.src = e.target.result;
-        img.className = 'loaded';
-        document.getElementById('avatar-placeholder').className = 'avatar-placeholder hidden';
-      };
-      reader.readAsDataURL(input.files[0]);
-    }
-  }
-
-  function previewCelebPhoto(input) {
-    if (input.files && input.files[0]) {
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('celeb-preview-img').src = e.target.result;
-        document.getElementById('celeb-preview').className = 'upload-preview has-image';
-      };
-      reader.readAsDataURL(input.files[0]);
-    }
-  }
-
-  function previewPhoto(input) {
-    if (input.files && input.files[0]) {
-      var reader = new FileReader();
-      reader.onload = function(e) {
-        document.getElementById('preview-img').src = e.target.result;
-        document.getElementById('photo-preview').className = 'upload-preview has-image';
-      };
-      reader.readAsDataURL(input.files[0]);
     }
   }
 
@@ -1041,6 +1006,15 @@
         body: payload.toString()
       });
 
+      if (attendVal === 'yes') {
+        document.getElementById('success-emoji').textContent = '🎉';
+        document.getElementById('success-heading').textContent = 'See you there!';
+        document.getElementById('success-msg').textContent = "We can't wait to celebrate with you! 🥳";
+      } else {
+        document.getElementById('success-emoji').textContent = '💌';
+        document.getElementById('success-heading').textContent = 'Thank you for letting us know!';
+        document.getElementById('success-msg').textContent = "We'll miss you! We truly appreciate you taking the time to respond. 💕";
+      }
       document.getElementById('summary-grid').innerHTML = html;
       document.getElementById('rsvp-form').style.display = 'none';
       var heroEl = document.querySelector('.hero');
@@ -1076,11 +1050,6 @@
     document.querySelectorAll('.wishlist-item').forEach(function(el) { el.className = 'wishlist-item'; });
     document.getElementById('gift-type').value = '';
     document.getElementById('gift-suggest').className = 'gift-suggest';
-    document.getElementById('avatar-img').className = '';
-    document.getElementById('avatar-img').src = '';
-    document.getElementById('avatar-placeholder').className = 'avatar-placeholder';
-    document.getElementById('celeb-preview').className = 'upload-preview';
-    document.getElementById('photo-preview').className = 'upload-preview';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 </script>
