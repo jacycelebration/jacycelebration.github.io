@@ -664,7 +664,7 @@
     </div>
 
     <!-- SECTION 3: Number of Guests -->
-    <div class="card c-sky">
+    <div class="card c-sky" id="section-guests">
       <div class="section-label">
         <div class="section-icon icon-sky">👨‍👩‍👧‍👦</div>
         <div>
@@ -687,7 +687,7 @@
     </div>
 
     <!-- SECTION 4: Venue -->
-    <div class="card c-peach">
+    <div class="card c-peach" id="section-venue">
       <div class="section-label">
         <div class="section-icon icon-peach">📍</div>
         <div>
@@ -813,6 +813,7 @@
 
         <input type="hidden" id="gift-type" value="">
       </div>
+    </div>
 
     <!-- SECTION 6: Additional Notes -->
     <div class="card c-sky">
@@ -829,12 +830,11 @@
       </div>
     </div>
 
-  </div>
-
   <p class="req-note" style="margin-top:6px;"><span style="color:var(--rose-dk);">*</span> Required fields</p>
   <div class="submit-wrap">
     <button type="submit" class="submit-btn">🎊 Submit My RSVP</button>
   </div>
+</div>
 </form>
 
 <!-- SUCCESS -->
@@ -866,6 +866,12 @@
     document.getElementById('btn-yes').className = 'yn-btn' + (el.value === 'yes' ? ' selected-yes' : '');
     document.getElementById('btn-no').className  = 'yn-btn' + (el.value === 'no'  ? ' selected-no'  : '');
     document.getElementById('attend-err').style.display = 'none';
+    // Guest count + venue only apply to attendees — hide those sections (and
+    // skip their required checks) when the guest says they can't make it.
+    var attending = el.value === 'yes';
+    document.getElementById('section-guests').style.display = attending ? '' : 'none';
+    document.getElementById('section-venue').style.display  = attending ? '' : 'none';
+    if (!attending) document.getElementById('venue-err').className = 'venue-req-err';
   }
 
   function toggleVenue(event, cls, key) {
@@ -937,8 +943,8 @@
       valid = false;
     }
 
-    // Venue (required)
-    if (!venueState.mcdo && !venueState.swim && !venueState.church) {
+    // Venue (required only when attending — decliners skip this)
+    if (attendVal === 'yes' && !venueState.mcdo && !venueState.swim && !venueState.church) {
       document.getElementById('venue-err').className = 'venue-req-err show';
       valid = false;
     }
@@ -967,11 +973,17 @@
     var rows = [
       ['👤', 'Name', nameVal],
       ['🎉', 'Attendance', attendVal === 'yes' ? '✅ Attending' : '❌ Not Attending'],
-      ['👨‍👩‍👧‍👦', 'Guests', guestCount + ' guest(s)'],
-      ['📍', 'Venue(s)', venues.join(' + ') || '—'],
-      ['🎁', 'Gift', giftLabel],
-      ['💌', 'Message', msg],
     ];
+    // Guests + venue only matter for attendees
+    if (attendVal === 'yes') {
+      rows.push(['👨‍👩‍👧‍👦', 'Guests', guestCount + ' guest(s)']);
+      rows.push(['📍', 'Venue(s)', venues.join(' + ') || '—']);
+    }
+    // Show the gift row for attendees, or for decliners only if they chose one
+    if (attendVal === 'yes' || giftVal) {
+      rows.push(['🎁', 'Gift', giftLabel]);
+    }
+    rows.push(['💌', 'Message', msg]);
 
     var html = '';
     rows.forEach(function(r) {
@@ -1031,6 +1043,8 @@
     document.getElementById('rsvp-form').style.display = 'block';
     document.querySelector('.hero').style.display = 'block';
     document.getElementById('success-screen').style.display = 'none';
+    document.getElementById('section-guests').style.display = '';
+    document.getElementById('section-venue').style.display = '';
     guestCount = 0;
     document.getElementById('guest-display').textContent = '0';
     document.getElementById('guest-count').value = '0';
