@@ -1,0 +1,12 @@
+<svg width="1200" height="1440" viewBox="0 0 1200 1440" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="1440" rx="56" fill="#F6EFE7"/>
+  <rect x="42" y="42" width="1116" height="1356" rx="36" fill="#FBF7F2" stroke="#D6C3B4" stroke-width="4"/>
+  <circle cx="927" cy="302" r="166" fill="#DFA06E" fill-opacity="0.28"/>
+  <circle cx="283" cy="1114" r="213" fill="#A8BBB0" fill-opacity="0.28"/>
+  <path d="M201 954C318 816 454 816 592 954C730 1092 868 1092 999 954" stroke="#315247" stroke-width="10" stroke-linecap="round"/>
+  <path d="M231 468C231 468 372 290 600 290C828 290 969 468 969 468" stroke="#BF6B3F" stroke-width="10" stroke-linecap="round"/>
+  <rect x="322" y="521" width="556" height="338" rx="28" fill="#FFFFFF" stroke="#D6C3B4" stroke-width="4" stroke-dasharray="12 12"/>
+  <text x="600" y="640" text-anchor="middle" fill="#213126" font-family="Manrope, Arial, sans-serif" font-size="42" font-weight="700">Replace with your</text>
+  <text x="600" y="694" text-anchor="middle" fill="#213126" font-family="Cormorant Garamond, Georgia, serif" font-size="74" font-weight="600">Cover Photo</text>
+  <text x="600" y="760" text-anchor="middle" fill="#5F6D63" font-family="Manrope, Arial, sans-serif" font-size="28">Tip: keep the same filename for an easy swap</text>
+</svg>
